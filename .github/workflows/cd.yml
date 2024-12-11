@@ -1,0 +1,43 @@
+name: Continuous Delivery (CD)
+
+on:
+  workflow_run:
+    workflows: ["Continuous Integration (CI)"]
+    types:
+      - completed
+
+jobs:
+  build-and-push-docker-image:
+    runs-on: ubuntu-22.04
+    steps:
+      # Étape 1: Vérifiez le code
+      - name: Checkout code
+        uses: actions/checkout@v2.5.0
+
+      # Étape 2: Connectez-vous à Docker Hub
+      - name: Login to DockerHub
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      # Étape 3: Construisez et poussez l'image pour simple-api
+      - name: Build and push API image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./simple-api
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
+          push: true
+
+      # Étape 4: Construisez et poussez l'image pour database
+      - name: Build and push Database image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./database
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-database:latest
+          push: true
+
+      # Étape 5: Construisez et poussez l'image pour httpd
+      - name: Build and push HTTPD image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./http-server
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
+          push: true
