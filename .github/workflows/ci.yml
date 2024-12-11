@@ -26,11 +26,18 @@ jobs:
       - name: Build and test with Maven
         run: mvn clean verify --file ./simple-api/pom.xml
 
-      # Étape 4: Analyse de qualité avec SonarCloud
-      - name: SonarCloud Analysis
-        working-directory: ./simple-api
-        run: mvn -B verify sonar:sonar \
-              -Dsonar.projectKey=RemyDmK_tp_big_data_1 \
-              -Dsonar.organization=remydmk \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+      # # Etape 3.5: debug
+      # - name: Debug file structure
+      #   run: ls -R ./simple-api
+
+      # Étape 4: Construisez, testez et analysez avec SonarCloud
+      - name: Build, test, and analyze with SonarCloud
+        run: |
+          cd simple-api
+          mvn -B verify sonar:sonar \
+            -Dsonar.projectKey=Iznomoule_Lab-AppBigData \
+            -Dsonar.organization=iznomoule \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            
+
